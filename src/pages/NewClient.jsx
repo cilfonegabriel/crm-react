@@ -6,10 +6,18 @@ export async function action({request}) {
     const formData = await request.formData()
     const datos = Object.fromEntries(formData)
 
+    const email = formData.get('email')
+
     const errors = []
     if(Object.values(datos).includes('')) {
         errors.push('All fields are required')
     }
+
+    let regex = new RegExp("([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\"\(\[\]!#-[^-~ \t]|(\\[\t -~]))+\")@([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\[[\t -Z^-~]*])");
+    if(!regex.test(email)) {
+        errors.push('The email is not validated.')
+    }
+
 
     if(Object.keys(errors).length){
         return errors
@@ -44,6 +52,7 @@ function NewClient() {
 
             <Form
                 method="post"
+                noValidate
             >
                 <Formulario />
 

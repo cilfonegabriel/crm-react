@@ -1,11 +1,11 @@
-import { useNavigate, Form, useActionData} from "react-router-dom"
+import { useNavigate, Form, useActionData, redirect} from "react-router-dom"
 import Formulario from "../components/Formulario"
 import Error from "../components/Error"
+import { addClients } from "../data/clients"
 
 export async function action({request}) {
     const formData = await request.formData()
     const datos = Object.fromEntries(formData)
-
     const email = formData.get('email')
 
     const errors = []
@@ -23,6 +23,9 @@ export async function action({request}) {
         return errors
     }
 
+    await addClients(datos)
+
+    return redirect('/')
 }
 
 function NewClient() {

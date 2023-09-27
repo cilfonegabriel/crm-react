@@ -1,6 +1,7 @@
-import { Form, useNavigate, useLoaderData } from "react-router-dom"
-import { getClient } from "../data/clients"
+import { Form, useNavigate, useLoaderData, useActionData, redirect } from "react-router-dom"
+import { getClient, updateClient } from "../data/clients"
 import Formulario from "../components/Formulario"
+import Error from "../components/Error"
 
 export async function loader({params}) {
 
@@ -15,10 +16,36 @@ export async function loader({params}) {
     return client
 }
 
+export async function action({request, params}){
+    const formData = await request.formData()
+    const datos = Object.fromEntries(formData)
+    const email = formData.get('email')
+
+    const errors = []
+    if(Object.values(datos).includes('')) {
+        errors.push('All fields are required')
+    }
+
+    let regex = new RegExp("([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\"\(\[\]!#-[^-~ \t]|(\\[\t -~]))+\")@([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\[[\t -Z^-~]*])");
+    if(!regex.test(email)) {
+        errors.push('The email is not validated.')
+    }
+
+
+    if(Object.keys(errors).length){
+        return errors
+    }
+
+    await updateClient(params.clientId ,datos)
+
+    return redirect('/')
+}
+
 const EditClient = () => {
 
     const navigate = useNavigate()
     const client = useLoaderData()
+    const errors = useActionData()
 
   return (
     <>
@@ -36,7 +63,7 @@ const EditClient = () => {
 
         <div className="bg-white shadow rounded-md md:w-3/4 mx-auto px-5 py-10 mt-20">
 
-            {/*errors?.length && errors.map( ( error, i ) => <Error key={i}>{error}</Error> )*/}
+            {errors?.length && errors.map( ( error, i ) => <Error key={i}>{error}</Error> )}
 
             <Form
                 method="post"
@@ -49,7 +76,7 @@ const EditClient = () => {
                 <input
                     type="submit"
                     className="mt-5 w-full bg-blue-800 p-3 uppercase font-bold text-white text-lg"
-                    value = "Register Client"
+                    value = "Save Changes"
                 />
             </Form>
         </div>

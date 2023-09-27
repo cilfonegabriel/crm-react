@@ -71,12 +71,9 @@ function index() {
                   client={client}
                   key={client.id}
                 />
-
               ))}
-            </tbody>
-          
+            </tbody>        
         </table>
-
       ) : (
         <p className="text-center mt-10">There are no clients</p>
       )}

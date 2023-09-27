@@ -11,7 +11,7 @@ export async function getClient(id) {
 }
 
 export async function addClients(datos) {
-    
+
     try {
         const resp = await fetch(import.meta.env.VITE_API_URL, {
             method: 'POST',

@@ -49,6 +49,7 @@
   <ul>
     <li>HTML, CSS, JavaScript</li>
     <li>Rest API</li>
+    <li>JSON Server</li>
     <li><a href="https://reactjs.org/">React.js</a></li>
   </ul>
 </details>
@@ -79,7 +80,11 @@ npm install
 
 Then just wait for everything to finish downloading.
 
-### Usage
+### Usage: Run the following codes on different terminals.
+
+Start JSON Server:
+
+`json-server --watch db.json`
 
 Start the React app:
 

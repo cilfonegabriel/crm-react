@@ -1,9 +1,22 @@
-import { useNavigate, Form, useActionData, redirect} from "react-router-dom"
+import { Form, useNavigate, useLoaderData, useActionData, redirect } from "react-router-dom"
+import { getClient, updateClient } from "../data/clients"
 import Formulario from "../components/Formulario"
 import Error from "../components/Error"
-import { addClients } from "../data/clients"
 
-export async function action({request}) {
+export async function loader({params}) {
+
+    const client = await getClient(params.clientId)
+
+    if(Object.values(client).length === 0){
+        throw new Response('', {
+            status: 404,
+            statusText: 'Client Inexistence'
+        })
+    }
+    return client
+}
+
+export async function action({request, params}){
     const formData = await request.formData()
     const datos = Object.fromEntries(formData)
     const email = formData.get('email')
@@ -23,22 +36,21 @@ export async function action({request}) {
         return errors
     }
 
-    await addClients(datos)
+    await updateClient(params.clientId ,datos)
 
     return redirect('/')
 }
 
-function NewClient() {
+const EditClient = () => {
 
-    const errors = useActionData()
     const navigate = useNavigate()
+    const client = useLoaderData()
+    const errors = useActionData()
 
-    console.log(errors)
-
-    return (
-        <>
-        <h1 className="font-black text-4xl text-blue-900">New Client</h1>
-        <p className="mt-3">Complete all fields to register a new client.</p>
+  return (
+    <>
+        <h1 className="font-black text-4xl text-blue-900">Edit Client</h1>
+        <p className="mt-3">Customer data can then be modified.</p>
 
         <div className="flex justify-end">
             <button
@@ -57,17 +69,19 @@ function NewClient() {
                 method="post"
                 noValidate
             >
-                <Formulario />
+                <Formulario
+                    cliente = {client}
+                />
 
                 <input
                     type="submit"
                     className="mt-5 w-full bg-blue-800 p-3 uppercase font-bold text-white text-lg"
-                    value = "Register Client"
+                    value = "Save Changes"
                 />
             </Form>
         </div>
-        </>
-    )
+    </>
+  )
 }
 
-export default NewClient
+export default EditClient

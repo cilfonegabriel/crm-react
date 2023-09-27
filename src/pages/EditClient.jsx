@@ -1,7 +1,16 @@
-export async function loader({params}) {
-    console.log(params)
+import { getClient } from "../data/clients"
 
-    return {}
+export async function loader({params}) {
+
+    const client = await getClient(params.clientId)
+
+    if(Object.values(client).length === 0){
+        throw new Response('', {
+            status: 404,
+            statusText: 'Client Inexistence'
+        })
+    }
+    return client
 }
 
 const EditClient = () => {
